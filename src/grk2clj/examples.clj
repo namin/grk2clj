@@ -8,7 +8,7 @@
 
 ;;; Some examples from the paper
 ;;; translated from Typed Racket to Typed Clojure
-;;; To type-check, load namespace in REPL execute (check-ns).
+;;; To type-check, load namespace in REPL and execute (check-ns).
 
 ;;; Example 2
 (ann f [(U String Number) -> Number])
