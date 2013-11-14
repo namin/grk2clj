@@ -1,0 +1,142 @@
+\documentclass{beamer}
+
+\usepackage{bcprules}
+
+\newcommand{\ts}{\,\vdash\,}
+\newcommand{\ev}{\,\Downarrow\,}
+\newcommand{\typ}{\,:\,}
+\newcommand{\lam}[2]{{\lambda}#1.#2}
+\newcommand{\clo}[3]{\,<\lam{#1}{#2} {\bf \ in \ } #3>\,}
+\newcommand{\arrow}{\,\rightarrow\,}
+\newcommand{\red}{\,\Longrightarrow\,}
+\newcommand{\cpsm}{\,\Rightarrow^M\,}
+\newcommand{\cpst}{\,\Rightarrow^T\,}
+
+\useoutertheme{infolines}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{
+  \hfill
+  \usebeamercolor[fg]{page number in head/foot}
+  \usebeamerfont{page number in head/foot}
+  \insertpagenumber\kern1em\vskip10pt
+}
+\setbeamertemplate{navigation symbols}{}
+
+\title{From Greek to Clojure}
+%\subtitle{}
+\author{Nada Amin and William Byrd}
+\institute{Clojure/conj, Alexandria, VA}
+\date{November 14, 2013}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\begin{frame}[fragile]{Syntax}
+\begin{itemize}
+\item variable $x, y, z$
+\item term $e$ :=
+\begin{itemize}
+\item variable $x$
+\item abstraction $\lam{x}{e}$
+\item application $(e_1 \ e_2)$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]{Evaluation}
+
+\begin{itemize}
+\item value $v$ := $\clo{x}{e}{\rho}$
+\end{itemize}
+
+\infrule[\textsc{var}]
+{(x: v) \in \rho}
+{\rho \ts x \ev v}
+
+\infax[\textsc{abs}]
+{\rho \ts \lam{x}{e} \ev \clo{x}{e}{\rho} }
+
+\infrule[\textsc{app}]
+{\rho \ts e_1 \ev \clo{x}{e}{\rho_1}\\
+ \rho \ts e_2 \ev v_2\\
+ \rho_1, (x: v_2) \ts e \ev v}
+{\rho \ts (e_1 \ e_2) \ev v}
+
+\end{frame}
+
+\begin{frame}[fragile]{Typing}
+
+\infrule[\textsc{var}]
+{(x: T) \in \Gamma}
+{\Gamma \ts x \typ T}
+
+\infrule[\textsc{abs}]
+{\Gamma, (x: T_1) \ts e \typ T_2}
+{\Gamma \ts \lam{x}{e} \typ T_1 \arrow T_2 }
+
+\infrule[\textsc{app}]
+{\Gamma \ts e_1 \typ T_1 \arrow T\\
+\Gamma \ts e_2 \typ T_1}
+{\Gamma \ts (e_1 \ e_2) \typ T}
+
+\end{frame}
+
+\begin{frame}[fragile]{Reduction}
+
+\begin{itemize}
+\item value $v$ := $\lam{x}{e}$
+\end{itemize}
+
+\infax[app-beta]
+{((\lam{x}{e}) \ v) \red [v/x]e}
+
+\infrule[app-1]
+{e_1 \red e_1'}
+{(e_1 \ e_2) \red (e_1' \ e_2)}
+
+\infrule[app-2]
+{e_2 \red e_2'}
+{(v_1 \ e_2) \red (v_1 \ e_2')}
+
+\end{frame}
+
+\begin{frame}[fragile]{CPS: Syntax of Target}
+\begin{itemize}
+\item atom expression $a$ :=
+\begin{itemize}
+\item variable $x$
+\item abstraction $\lam{[x*]}{a}$
+\end{itemize}
+\item complex expresion $c$ :=
+\begin{itemize}
+\item application $(a \ a*)$
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{CPS: Rules}
+\infax[M-var]
+{x \cpsm x}
+
+\infrule[M-abs]
+{e | y_k \cpst c}
+{\lam{x}{e} \cpsm \lam{[x \ y_k]}{c}}
+
+\infrule[T-var]
+{x \cpsm c_x}
+{x | a_k \cpst (a_k \ c_x)}
+
+\infrule[T-abs]
+{\lam{x}{e} \cpsm c}
+{\lam{x}{e} | a_k \cpst (a_k \ c)}
+
+\infrule[T-app]
+{e_1 | \lam{x_1}{c_2} \cpst c_1\\
+ e_2 | \lam{x_2}{(x_1 \ x_2 \ a_k)} \cpst c_2}
+{(e_1 \ e_2) | a_k \cpst c_1}
+
+\end{frame}
+
+\end{document}
