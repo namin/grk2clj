@@ -45,27 +45,6 @@
 \end{frame}
 
 
-\begin{frame}[fragile]{Evaluation}
-
-\begin{itemize}
-\item value $v$ := $\clo{x}{e}{\rho}$
-\end{itemize}
-
-\infrule[\textsc{var}]
-{(x: v) \in \rho}
-{\rho \ts x \ev v}
-
-\infax[\textsc{abs}]
-{\rho \ts \lam{x}{e} \ev \clo{x}{e}{\rho} }
-
-\infrule[\textsc{app}]
-{\rho \ts e_1 \ev \clo{x}{e}{\rho_1}\\
- \rho \ts e_2 \ev v_2\\
- \rho_1, (x: v_2) \ts e \ev v}
-{\rho \ts (e_1 \ e_2) \ev v}
-
-\end{frame}
-
 \begin{frame}[fragile]{Typing}
 
 \infrule[\textsc{var}]
@@ -136,6 +115,27 @@
 {e_1 | \lam{x_1}{c_2} \cpst c_1\\
  e_2 | \lam{x_2}{(x_1 \ x_2 \ a_k)} \cpst c_2}
 {(e_1 \ e_2) | a_k \cpst c_1}
+
+\end{frame}
+
+\begin{frame}[fragile]{Evaluation}
+
+\begin{itemize}
+\item value $v$ := $\clo{x}{e}{\rho}$
+\end{itemize}
+
+\infrule[\textsc{var}]
+{(x: v) \in \rho}
+{\rho \ts x \ev v}
+
+\infax[\textsc{abs}]
+{\rho \ts \lam{x}{e} \ev \clo{x}{e}{\rho} }
+
+\infrule[\textsc{app}]
+{\rho \ts e_1 \ev \clo{x}{e}{\rho_1}\\
+ \rho \ts e_2 \ev v_2\\
+ \rho_1, (x: v_2) \ts e \ev v}
+{\rho \ts (e_1 \ e_2) \ev v}
 
 \end{frame}
 
