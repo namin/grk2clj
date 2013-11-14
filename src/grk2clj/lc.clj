@@ -66,6 +66,27 @@
      ([x v] ...)
 )
 
+(defn ev [env e]
+  (match [e]
+         [(x :guard symbol?)]
+         (get env e)
+         [(['fn [x] eb] :seq)]
+         `(~'clo [~x] ~eb ~env)
+         [([e1 e2] :seq)]
+         (let [v1 (ev env e1)
+               v2 (ev env e2)]
+           (match [v1]
+                  [(['clo [x] eb env1] :seq)]
+                  (ev (assoc env1 x v2) eb)))))
+
+(is (= (ev {'x 1} 'x)
+       1))
+(is (= (ev {'y 1} '((fn [x] x) (fn [y] y)))
+       '(clo [y] y {y 1})))
+(is (= (ev {'y 1} '((fn [x] x) y))
+       1))
+
+
 (defn env-lookupo [env x v]
   (conde
    [(fresh [envr]
