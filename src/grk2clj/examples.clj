@@ -15,3 +15,21 @@
 (defn f [x]
   (if (number? x) (inc x) (count x)))
 
+(ann ex4 [Any -> Number])
+(defn ex4 [x]
+  (if (or (number? x) (string? x))
+    (f x)
+    0))
+
+(ann ex5 [(U String Number) Any -> Number])
+(defn ex5 [x y]
+  (if (and (number? x) (string? y))
+    (+ x (count y))
+    0))
+
+(ann ^:no-check ex6 [(U String Number) Any -> Number])
+(defn ex6 [x y]
+  (if (and (number? x) (string? y))
+    (+ x (count y))
+    (count x)))
+
