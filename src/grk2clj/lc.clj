@@ -137,4 +137,43 @@
        '(Num)))
 
 
-    
+;;; CPSer
+
+(defn new-fresh-sym []
+  (let [id (atom 0)]
+    (fn [s]
+      (let [r (symbol (str s @id))]
+        (swap! id inc)
+        r))))
+
+(declare cps-m)
+(defn cps-t [fresh-sym expr cont]
+  (match [expr]
+         [(['fn [x] eb]  :seq)]
+         `(~cont ~(cps-m fresh-sym expr))
+         [(x :guard symbol?)]
+         `(~cont ~(cps-m fresh-sym expr))
+         [(n :guard number?)]
+         `(~cont ~(cps-m fresh-sym expr))
+         [([f e] :seq)]
+         (let [fs (fresh-sym 'f)
+               es (fresh-sym 'e)]
+           (cps-t fresh-sym
+                  f `(~'fn [~fs]
+                       ~(cps-t fresh-sym
+                               e `(~'fn [~es]
+                                    (~fs ~es ~cont))))))))
+(defn cps-m [fresh-sym expr]
+  (match [expr]
+         [(['fn [x] eb] :seq)]
+         (let [k (fresh-sym 'k)]
+           `(~'fn [~x ~k] ~(cps-t fresh-sym eb k)))
+         [_] expr))
+
+(is (= (cps-m (new-fresh-sym) '(fn [x] x))
+       '(fn [x k0] (k0 x))))
+
+(is (= (cps-t (new-fresh-sym) '(g a) '(fn [x] x))
+       '((fn [f0] ((fn [e1] (f0 e1 (fn [x] x))) a)) g)))
+
+
