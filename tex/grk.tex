@@ -32,6 +32,26 @@
 
 \frame{\titlepage}
 
+\begin{frame}[fragile]{Peano Numbers: Syntax}
+\begin{itemize}
+\item a number $n$ is either
+\begin{itemize}
+\item zero $z$
+\item or the successor of a number $(s \ n)$
+\end{itemize}
+\item $n := z \ | \ (s \ n)$
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Peano Numbers: Plus Relation}
+\infax[plus-z]
+{z + n = n}
+
+\infrule[plus-s]
+{n_1 + n_2 = n_3}
+{(s \ n_1) + n_2 = (s \ n_3)}
+\end{frame}
+
 \begin{frame}[fragile]{Syntax}
 \begin{itemize}
 \item variable $x, y, z$
