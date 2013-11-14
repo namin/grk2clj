@@ -13,7 +13,9 @@
 ;;; Example 2
 (ann f [(U String Number) -> Number])
 (defn f [x]
-  (if (number? x) (inc x) (count x)))
+  (if (number? x)
+    (inc x)
+    (count x)))
 
 (ann ex4 [Any -> Number])
 (defn ex4 [x]
